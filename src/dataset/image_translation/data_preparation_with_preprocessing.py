@@ -8,15 +8,22 @@
  
 """
 
-import os, glob, time, sys
+import os
+import glob
+import time
+import sys
 from src.dataset.utils.Av2Flau_Convertor import Av2Flau_Convertor
 
-out_dir = r'/mnt/nfs/scratch1/yangzhou/PreprocessedVox_imagetranslation'
-src_dir = r'/mnt/nfs/scratch1/yangzhou/vox_p3/train'
+# out_dir = r'/mnt/nfs/scratch1/yangzhou/PreprocessedVox_imagetranslation'
+# src_dir = r'/mnt/nfs/scratch1/yangzhou/vox_p3/train'
+
+out_dir = r'/content/MakeItTalk/PreprocessedVox_imagetranslation'
+src_dir = r'/content/MakeItTalk/mp4'
 
 ''' Step 1. Data preparation '''
 # landmark extraction
 # landmark_extraction(int(sys.argv[1]), int(sys.argv[2]))
+
 
 def landmark_extraction(si, ei):
     '''
@@ -31,7 +38,6 @@ def landmark_extraction(si, ei):
             os.mkdir(os.path.join(out_dir, folder_name))
         except:
             pass
-
 
     if(not os.path.isfile(os.path.join(out_dir, 'filename_index.txt'))):
         # generate all file list
@@ -50,5 +56,7 @@ def landmark_extraction(si, ei):
 
             c = Av2Flau_Convertor(video_dir=os.path.join(src_dir, file),
                                   out_dir=out_dir, idx=idx)
-            c.convert(show=False) #  (save_audio=False, register=False, show=False)
-            print('Idx: {}, Processed time (min): {}'.format(idx, (time.time() - st) / 60.0))
+            # (save_audio=False, register=False, show=False)
+            c.convert(show=False)
+            print('Idx: {}, Processed time (min): {}'.format(
+                idx, (time.time() - st) / 60.0))

@@ -8,16 +8,17 @@
  
 """
 
+import glob
+import os
+import torch
+import platform
+from src.approaches.train_image_translation import Image_translation_block
+from src.dataset.image_translation import landmark_extraction, landmark_image_to_data
+import argparse
+import cv2
+import numpy as np
 import sys
 sys.path.append('thirdparty/AdaptiveWingLoss')
-import os, glob
-import numpy as np
-import cv2
-import argparse
-from src.dataset.image_translation import landmark_extraction, landmark_image_to_data
-from approaches.train_image_translation import Image_translation_block
-import platform
-import torch
 
 
 if platform.release() == '4.4.0-83-generic':
@@ -26,7 +27,7 @@ if platform.release() == '4.4.0-83-generic':
     jpg_dir = r'img_output'
     ckpt_dir = r'img_output'
     log_dir = r'img_output'
-else: # 3.10.0-957.21.2.el7.x86_64
+else:  # 3.10.0-957.21.2.el7.x86_64
     # root = r'/mnt/nfs/scratch1/yangzhou/VoxCeleb2_imagetranslation'
     root = r'/mnt/nfs/scratch1/yangzhou/PreprocessedVox_imagetranslation'
     src_dir = os.path.join(root, 'raw_fl3d')
@@ -45,10 +46,12 @@ else: # 3.10.0-957.21.2.el7.x86_64
 
 ''' Step 2. Train the network '''
 parser = argparse.ArgumentParser()
-parser.add_argument('--nepoch', type=int, default=150, help='number of epochs to train for')
+parser.add_argument('--nepoch', type=int, default=150,
+                    help='number of epochs to train for')
 parser.add_argument('--batch_size', type=int, default=8, help='batch size')
 parser.add_argument('--num_frames', type=int, default=1, help='')
-parser.add_argument('--num_workers', type=int, default=4, help='number of frames extracted from each video')
+parser.add_argument('--num_workers', type=int, default=4,
+                    help='number of frames extracted from each video')
 parser.add_argument('--lr', type=float, default=0.0001, help='')
 
 parser.add_argument('--write', default=False, action='store_true')
