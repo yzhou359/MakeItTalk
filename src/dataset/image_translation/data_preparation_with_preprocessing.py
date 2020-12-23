@@ -41,7 +41,15 @@ def landmark_extraction(si, ei):
 
     if(not os.path.isfile(os.path.join(out_dir, 'filename_index.txt'))):
         # generate all file list
-        files = glob.glob1(src_dir, '*.mp4')
+        # files = glob.glob1(src_dir, '*.mp4')
+        files = []
+        folders = os.listdir(src_dir)
+        for folder in folders:
+            for i in os.listdir(os.path.join(src_dir, folder)):
+                file = glob.glob(os.path.join(src_dir, folder, i, '*.mp4'))
+                for j in file:
+                    files.append(j)
+
         with open(os.path.join(out_dir, 'filename_index.txt'), 'w') as f:
             for i, file in enumerate(files):
                 f.write('{} {}\n'.format(i, file))

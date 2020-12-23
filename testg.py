@@ -60,6 +60,6 @@ def prune_model(model):
 
 
 model = prune_model(model).to('cuda')
-# params = sum([np.prod(p.size()) for p in model.parameters()])
-# print("Number of Parameters: %.1fM" % (params/1e6))
+params = sum([np.prod(p.size()) for p in model.parameters()])
+print("Number of Parameters: %.1fM" % (params/1e6))
 torch.save(model, 'model.h5')
