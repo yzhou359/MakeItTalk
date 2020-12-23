@@ -25,7 +25,7 @@ root = r'/content/MakeItTalk/PreprocessedVox_imagetranslation'
 src_dir = os.path.join(root, 'raw_fl3d')
 # mp4_dir = r'/mnt/nfs/scratch1/yangzhou/PreprocessedVox_mp4'
 mp4_dir = r'/content/MakeItTalk/mp4'
-# jpg_dir = os.path.join(root, 'tmp_v')
+jpg_dir = os.path.join(root, 'tmp_v')
 ckpt_dir = os.path.join(root, 'ckpt')
 log_dir = os.path.join(root, 'log')
 
