@@ -26,7 +26,7 @@ print("Number of Parameters: %.1fM" % (params/1e6))
 
 def prune_model(model):
     model.cpu()
-    DG = tp.DependencyGraph().build_dependency(model, torch.randn(10, 6, 256, 256))
+    DG = tp.DependencyGraph().build_dependency(model, torch.randn(5, 6, 256, 256))
 
     def prune_conv(conv, pruned_prob):
         weight = conv.weight.detach().cpu().numpy()

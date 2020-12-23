@@ -2,15 +2,16 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from core.coord_conv import CoordConvTh
+from thirdparty.AdaptiveWingLoss.core.coord_conv import CoordConvTh
 
 
 def conv3x3(in_planes, out_planes, strd=1, padding=1,
-            bias=False,dilation=1):
+            bias=False, dilation=1):
     "3x3 convolution with padding"
     return nn.Conv2d(in_planes, out_planes, kernel_size=3,
                      stride=strd, padding=padding, bias=bias,
                      dilation=dilation)
+
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -42,6 +43,7 @@ class BasicBlock(nn.Module):
         out = self.relu(out)
 
         return out
+
 
 class ConvBlock(nn.Module):
     def __init__(self, in_planes, out_planes):
@@ -88,6 +90,7 @@ class ConvBlock(nn.Module):
         out3 += residual
 
         return out3
+
 
 class HourGlass(nn.Module):
     def __init__(self, num_modules, depth, num_features, first_one=False):
@@ -140,6 +143,7 @@ class HourGlass(nn.Module):
     def forward(self, x, heatmap):
         x, last_channel = self.coordconv(x, heatmap)
         return self._forward(self.depth, x), last_channel
+
 
 class FAN(nn.Module):
 
@@ -216,7 +220,7 @@ class FAN(nn.Module):
             # Predict heatmaps
             tmp_out = self._modules['l' + str(i)](ll)
             if self.end_relu:
-                tmp_out = F.relu(tmp_out) # HACK: Added relu
+                tmp_out = F.relu(tmp_out)  # HACK: Added relu
             outputs.append(tmp_out)
             boundary_channels.append(boundary_channel)
 

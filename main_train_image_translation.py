@@ -13,29 +13,21 @@ import os
 import torch
 import platform
 from src.approaches.train_image_translation import Image_translation_block
-from src.dataset.image_translation import landmark_extraction, landmark_image_to_data
+from src.dataset.image_translation.data_preparation import landmark_extraction, landmark_image_to_data
 import argparse
 import cv2
 import numpy as np
 import sys
 sys.path.append('thirdparty/AdaptiveWingLoss')
 
-
-if platform.release() == '4.4.0-83-generic':
-    src_dir = r'/mnt/ntfs/Dataset/TalkingToon/VoxCeleb2_imagetranslation/raw_fl3d'
-    mp4_dir = r'/mnt/ntfs/Dataset/VoxCeleb2/train_set/dev/mp4'
-    jpg_dir = r'img_output'
-    ckpt_dir = r'img_output'
-    log_dir = r'img_output'
-else:  # 3.10.0-957.21.2.el7.x86_64
-    # root = r'/mnt/nfs/scratch1/yangzhou/VoxCeleb2_imagetranslation'
-    root = r'/mnt/nfs/scratch1/yangzhou/PreprocessedVox_imagetranslation'
-    src_dir = os.path.join(root, 'raw_fl3d')
-    # mp4_dir = r'/mnt/nfs/work1/kalo/yangzhou/VoxCeleb2/train_set/dev/mp4'
-    mp4_dir = r'/mnt/nfs/scratch1/yangzhou/PreprocessedVox_mp4'
-    jpg_dir = os.path.join(root, 'tmp_v')
-    ckpt_dir = os.path.join(root, 'ckpt')
-    log_dir = os.path.join(root, 'log')
+# root = r'/mnt/nfs/scratch1/yangzhou/PreprocessedVox_imagetranslation'
+root = r'/content/MakeItTalk/PreprocessedVox_imagetranslation'
+src_dir = os.path.join(root, 'raw_fl3d')
+# mp4_dir = r'/mnt/nfs/scratch1/yangzhou/PreprocessedVox_mp4'
+mp4_dir = r'/content/MakeItTalk/mp4'
+# jpg_dir = os.path.join(root, 'tmp_v')
+ckpt_dir = os.path.join(root, 'ckpt')
+log_dir = os.path.join(root, 'log')
 
 ''' Step 1. Data preparation '''
 # landmark extraction
