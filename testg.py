@@ -1,3 +1,4 @@
+from operator import xor
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,8 +9,8 @@ import torch_pruning as tp
 
 model = ResUnetGenerator(input_nc=6, output_nc=3,
                          num_downs=6, use_dropout=False)
-# params = sum([np.prod(p.size()) for p in model.parameters()])
-# print("Number of Parameters: %.1fM" % (params/1e6))
+params = sum([np.prod(p.size()) for p in model.parameters()])
+print("Number of Parameters: %.1fM" % (params/1e6))
 
 # i = 0
 # for m in model.modules():
@@ -63,3 +64,10 @@ model = prune_model(model).to('cuda')
 params = sum([np.prod(p.size()) for p in model.parameters()])
 print("Number of Parameters: %.1fM" % (params/1e6))
 torch.save(model, 'model.h5')
+
+
+x = torch.load('model.h5')
+
+img = torch.zeros((3, 6, 256, 256)).to('cuda')
+print(x(img))
+# summary(x, input_size=(3, 6, 256, 256))

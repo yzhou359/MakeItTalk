@@ -42,19 +42,19 @@ class Image_translation_block():
             self.G = ResUnetGenerator(
                 input_nc=7, output_nc=3, num_downs=6, use_dropout=False)
         else:
-            self.G = torch.load(opt_parser.load_G_name)
-            # self.G = ResUnetGenerator(
-            #     input_nc=6, output_nc=3, num_downs=6, use_dropout=False)
+            # self.G = torch.load(opt_parser.load_G_name)
+            self.G = ResUnetGenerator(
+                input_nc=6, output_nc=3, num_downs=6, use_dropout=False)
 
-        # if (opt_parser.load_G_name != ''):
-        #     ckpt = torch.load(opt_parser.load_G_name)
-        #     try:
-        #         self.G.load_state_dict(ckpt['G'])
-        #     except:
-        #         tmp = nn.DataParallel(self.G)
-        #         tmp.load_state_dict(ckpt['G'])
-        #         self.G.load_state_dict(tmp.module.state_dict())
-        #         del tmp
+        if (opt_parser.load_G_name != ''):
+            ckpt = torch.load(opt_parser.load_G_name)
+            try:
+                self.G.load_state_dict(ckpt['G'])
+            except:
+                tmp = nn.DataParallel(self.G)
+                tmp.load_state_dict(ckpt['G'])
+                self.G.load_state_dict(tmp.module.state_dict())
+                del tmp
 
         if torch.cuda.device_count() > 1:
             print("Let's use", torch.cuda.device_count(), "GPUs in G mode!")
