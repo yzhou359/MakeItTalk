@@ -49,7 +49,8 @@ class Av2Flau_Convertor():
         self.input_format = self.video_dir[-4:]
 
         # landmark predictor = FANet
-        self.predictor = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cuda', flip_input=True)
+        self.predictor = face_alignment.FaceAlignment(
+            face_alignment.LandmarksType._2D, device='cuda', flip_input=True)
 
         # landmark register
         self.t_shape_idx = (27, 28, 29, 30, 33, 36, 39, 42, 45)
@@ -63,7 +64,8 @@ class Av2Flau_Convertor():
 
         # Step 2: detect facial landmark
         wfn = self.video_dir.replace(self.input_format, '_preclean.mp4')
-        ret, fl2d, fl3d = self.__video_facial_landmark_detection__(video_dir=wfn, display=False, max_num_frames=max_num_frames)
+        ret, fl2d, fl3d = self.__video_facial_landmark_detection__(
+            video_dir=wfn, display=False, max_num_frames=max_num_frames)
         if (not ret):
             return
         if (len(fl3d) < 9):
@@ -75,7 +77,8 @@ class Av2Flau_Convertor():
         np.savetxt(os.path.join(self.out_dir, 'raw_fl3d/fan_{:05d}_{}_3d.txt'.format(self.idx, self.video_name[:-4])),
                    fl3d, fmt='%.2f')
         if (save_audio):
-            self.__save_audio__(video_dir=self.video_dir.replace(self.input_format, '_preclean.mp4'), fl3d=fl3d)
+            self.__save_audio__(video_dir=self.video_dir.replace(
+                self.input_format, '_preclean.mp4'), fl3d=fl3d)
 
         # Step 3.5: merge a/v together (optional)
         if (show):
@@ -86,8 +89,10 @@ class Av2Flau_Convertor():
                       self.idx, self.video_name[:-4]))
                   )
             self.__ffmpeg_merge_av__(
-                video_dir=self.video_dir.replace(self.input_format, '_fl_detect.mp4'),
-                audio_dir=self.video_dir.replace(self.input_format, '_preclean.mp4'),
+                video_dir=self.video_dir.replace(
+                    self.input_format, '_fl_detect.mp4'),
+                audio_dir=self.video_dir.replace(
+                    self.input_format, '_preclean.mp4'),
                 WriteFileName=os.path.join(self.out_dir, 'tmp_v', '{:05d}_{}_fl_av.mp4'.format(
                     self.idx, self.video_name[:-4])),
                 start_end_frame=(int(sf), int(ef)))
@@ -95,7 +100,8 @@ class Av2Flau_Convertor():
         # Step 4: remove tmp files
         os.remove(self.video_dir.replace(self.input_format, '_preclean.mp4'))
         if(os.path.isfile(self.video_dir.replace(self.input_format, '_fl_detect.mp4'))):
-            os.remove(self.video_dir.replace(self.input_format, '_fl_detect.mp4'))
+            os.remove(self.video_dir.replace(
+                self.input_format, '_fl_detect.mp4'))
 
         # Step 5: register fl3d
         if (register):
@@ -113,8 +119,8 @@ class Av2Flau_Convertor():
         Pre-clean downloaded videos. Return false if more than 2 streams found.
         Then convert it to fps=25, sample_rate=16kHz
         '''
-        input_video_dir = self.video_dir if '_x_' not in self.video_dir else self.video_dir.replace('_x_', '/')
-
+        input_video_dir = self.video_dir if '_x_' not in self.video_dir else self.video_dir.replace(
+            '_x_', '/')
         probe = ffmpeg.probe(input_video_dir)
         # print(probe['streams'])
         # print(len(probe['streams']))
@@ -131,13 +137,13 @@ class Av2Flau_Convertor():
         # create preclean video
         (
             ffmpeg
-                .input(input_video_dir)
-                .output(self.video_dir.replace(self.input_format, WriteFileName),
-                        # vcodec=codec['video'],
-                        # acodec=codec['audio'],
-                        r=fps, ar=sample_rate)
-                .overwrite_output().global_args('-loglevel', 'quiet')
-                .run()
+            .input(input_video_dir)
+            .output(self.video_dir.replace(self.input_format, WriteFileName),
+                    # vcodec=codec['video'],
+                    # acodec=codec['audio'],
+                    r=fps, ar=sample_rate)
+            .overwrite_output().global_args('-loglevel', 'quiet')
+            .run()
         )
 
         return True, self.video_dir.replace(self.input_format, WriteFileName)
@@ -168,14 +174,16 @@ class Av2Flau_Convertor():
         fps = video.get(cv2.CAP_PROP_FPS)
         w = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        print('Process Video {}, len: {}, FPS: {:.2f}, W X H: {} x {}'.format(video_dir, length, fps, w, h))
+        print('Process Video {}, len: {}, FPS: {:.2f}, W X H: {} x {}'.format(
+            video_dir, length, fps, w, h))
 
         if(write):
             writer = cv2.VideoWriter(self.video_dir.replace(self.input_format, WriteFileName),
-                                 cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (w, h))
+                                     cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (w, h))
 
         video_facial_landmark = []  # face-landmark np array per frame =: idx + [x,y] * 68
-        video_facial_landmark_3d = []  # face-landmark np array per frame =: idx + [x,y,z] * 68
+        # face-landmark np array per frame =: idx + [x,y,z] * 68
+        video_facial_landmark_3d = []
         frame_id = 0
         not_detected_frames = 0
 
@@ -195,7 +203,8 @@ class Av2Flau_Convertor():
                     break
 
             # dlib facial landmark detect
-            img_ret, shape, shape_3d = self.__image_facial_landmark_detection__(img=frame)
+            img_ret, shape, shape_3d = self.__image_facial_landmark_detection__(
+                img=frame)
 
             # successfully detected
             if (img_ret):
@@ -213,12 +222,14 @@ class Av2Flau_Convertor():
                     def interp(last, cur, num, dims=68 * 2 + 1):
                         interp_xys_np = np.zeros((num, dims))
                         for dim in range(dims):
-                            interp_xys_np[:, dim] = np.interp(np.arange(0, num), [-1, num], [last[dim], cur[dim]])
+                            interp_xys_np[:, dim] = np.interp(
+                                np.arange(0, num), [-1, num], [last[dim], cur[dim]])
                         interp_xys_np = np.round(interp_xys_np).astype('int')
                         interp_xys = [list(xy) for xy in interp_xys_np]
                         return interp_xys
 
-                    interp_xys = interp(video_facial_landmark[-1], [frame_id] + xys, not_detected_frames)
+                    interp_xys = interp(
+                        video_facial_landmark[-1], [frame_id] + xys, not_detected_frames)
                     video_facial_landmark += interp_xys
 
                 not_detected_frames = 0
@@ -226,7 +237,8 @@ class Av2Flau_Convertor():
                 # save landmark/frame_index
                 video_facial_landmark.append([frame_id] + xys)
                 if (shape_3d.any()):
-                    video_facial_landmark_3d.append([frame_id] + list(np.reshape(shape_3d, -1)))
+                    video_facial_landmark_3d.append(
+                        [frame_id] + list(np.reshape(shape_3d, -1)))
 
                 if(write):
                     frame = self.__vis_landmark_on_img__(frame, shape)
@@ -299,7 +311,8 @@ class Av2Flau_Convertor():
         else:
             def draw_curve(idx_list, color=(0, 255, 0), loop=False, lineWidth=linewidth):
                 for i in idx_list:
-                    cv2.line(img, (shape[i, 0], shape[i, 1]), (shape[i + 1, 0], shape[i + 1, 1]), color, lineWidth)
+                    cv2.line(img, (shape[i, 0], shape[i, 1]),
+                             (shape[i + 1, 0], shape[i + 1, 1]), color, lineWidth)
                 if (loop):
                     cv2.line(img, (shape[idx_list[0], 0], shape[idx_list[0], 1]),
                              (shape[idx_list[-1] + 1, 0], shape[idx_list[-1] + 1, 1]), color, lineWidth)
@@ -325,7 +338,8 @@ class Av2Flau_Convertor():
         vin = ffmpeg.input(video_dir).video
         # ain = ffmpeg.input(audio_dir).audio
         # out = ffmpeg.output(vin, ain, WriteFileName, codec='copy', ss=st, t=tt, shortest=None)
-        out = ffmpeg.output(vin, WriteFileName, codec='copy', ss=st, t=tt, shortest=None)
+        out = ffmpeg.output(vin, WriteFileName, codec='copy',
+                            ss=st, t=tt, shortest=None)
         out = out.overwrite_output().global_args('-loglevel', 'quiet')
         out.run()
 
@@ -343,13 +357,14 @@ class Av2Flau_Convertor():
         spf = float(fps.split('/')[1]) / float(fps.split('/')[0])
         st, tt = sf * spf, ef * spf - sf * spf
 
-        audio_dir = os.path.join(self.out_dir, 'raw_wav', '{:05d}_{}_audio.wav'.format(self.idx, self.video_name[:-4]))
+        audio_dir = os.path.join(self.out_dir, 'raw_wav', '{:05d}_{}_audio.wav'.format(
+            self.idx, self.video_name[:-4]))
         (
             ffmpeg
-                .input(video_dir)
-                .output(audio_dir, ss=st, t=tt)
-                .overwrite_output().global_args('-loglevel', 'quiet')
-                .run()
+            .input(video_dir)
+            .output(audio_dir, ss=st, t=tt)
+            .overwrite_output().global_args('-loglevel', 'quiet')
+            .run()
         )
 
     ''' ========================================================================
@@ -368,11 +383,14 @@ class Av2Flau_Convertor():
         lines = savgol_filter(fl3d, 7, 3, axis=0)
 
         all_landmarks = lines[:, 1:].reshape((-1, 68, 3))  # remove frame idx
-        w, h = int(np.max(all_landmarks[:, :, 0])) + 20, int(np.max(all_landmarks[:, :, 1])) + 20
+        w, h = int(np.max(all_landmarks[:, :, 0])) + \
+            20, int(np.max(all_landmarks[:, :, 1])) + 20
 
         # Step 2 : setup anchor face
-        print('Using exisiting ' + 'dataset/utils/ANCHOR_T_SHAPE_{}.txt'.format(len(self.t_shape_idx)))
-        anchor_t_shape = np.loadtxt('dataset/utils/ANCHOR_T_SHAPE_{}.txt'.format(len(self.t_shape_idx)))
+        print('Using exisiting ' +
+              'dataset/utils/ANCHOR_T_SHAPE_{}.txt'.format(len(self.t_shape_idx)))
+        anchor_t_shape = np.loadtxt(
+            'dataset/utils/ANCHOR_T_SHAPE_{}.txt'.format(len(self.t_shape_idx)))
 
         registered_landmarks_to_save = []
         registered_affine_mat_to_save = []
@@ -389,19 +407,23 @@ class Av2Flau_Convertor():
             # Step 4 : Affine transform
             landmarks = np.hstack((landmarks, np.ones((68, 1))))
             registered_landmarks = np.dot(T, landmarks.T).T
-            err = np.mean(np.sqrt(np.sum((registered_landmarks[self.t_shape_idx, 0:3] - anchor_t_shape) ** 2, axis=1)))
+            err = np.mean(np.sqrt(np.sum(
+                (registered_landmarks[self.t_shape_idx, 0:3] - anchor_t_shape) ** 2, axis=1)))
             # print(err, distance, itr)
 
             # Step 5 : Save is requested
-            registered_landmarks_to_save.append([frame_id] + list(registered_landmarks[:, 0:3].reshape(-1)))
-            registered_affine_mat_to_save.append([frame_id] + list(T.reshape(-1)))
+            registered_landmarks_to_save.append(
+                [frame_id] + list(registered_landmarks[:, 0:3].reshape(-1)))
+            registered_affine_mat_to_save.append(
+                [frame_id] + list(T.reshape(-1)))
 
             # Step 5.5 (optional) : visualize ori / registered faces (Isolated in Black BG)
             if (display):
                 img = np.zeros((h, w * 2, 3), np.uint8)
                 self.__vis_landmark_on_img__(img, landmarks.astype(np.int))
                 registered_landmarks[:, 0] += w
-                self.__vis_landmark_on_img__(img, registered_landmarks.astype(np.int))
+                self.__vis_landmark_on_img__(
+                    img, registered_landmarks.astype(np.int))
                 cv2.imshow('img', img)
                 if (cv2.waitKey(30) == ord('q')):
                     break
@@ -418,8 +440,7 @@ class Av2Flau_Convertor():
 
 
 if __name__ == '__main__':
-    video_dir = r'C:\Users\yangzhou\Videos\004_1.mp4'
-    out_dir = r'C:\Users\yangzhou\Videos'
+    video_dir = r'mp4/id00154/6eX78POXvNg/00004.mp4'
+    out_dir = r'mp4/id00154/'
     c = Av2Flau_Convertor(video_dir, out_dir, idx=0)
     c.convert()
-

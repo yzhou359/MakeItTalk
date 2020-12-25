@@ -204,7 +204,10 @@ class Image_translation_block():
             img_fls = np.stack(img_fls, axis=0).astype(np.float32) / 255.0
             image_fls_in = torch.tensor(
                 img_fls, requires_grad=False).to(device)
-
+            print("#######################################")
+            print(image_fls_in.shape)
+            print(image_in.shape)
+            print("#######################################")
             if(self.opt_parser.add_audio_in):
                 # print(image_fls_in.shape, image_in.shape, audio_in.shape)
                 image_in = torch.cat([image_fls_in, image_in, audio_in], dim=1)

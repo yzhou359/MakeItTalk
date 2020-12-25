@@ -67,7 +67,7 @@ parser.add_argument('--add_audio_in', default=False, action='store_true')
 parser.add_argument('--comb_fan_awing', default=False, action='store_true')
 parser.add_argument('--fan_2or3D', type=str, default='3D')
 
-parser.add_argument('--single_test', type=str, default='')
+parser.add_argument('--single_test', type=str, default='False')
 
 opt_parser = parser.parse_args()
 

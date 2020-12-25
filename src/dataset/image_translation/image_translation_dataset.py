@@ -446,10 +446,10 @@ class image_translation_raw98_dataset(data.Dataset):
 
             # load mp4 file
             # ================= raw VOX version ================================
-            mp4_filename = fls_filename[:-4].split('_x_')
-            mp4_id = mp4_filename[0].split('_')[-1]
-            mp4_vname = mp4_filename[1]
-            mp4_vid = mp4_filename[2]
+            mp4_filename = fls_filename[:-4].split('/')
+            mp4_id = mp4_filename[1]
+            mp4_vname = mp4_filename[2]
+            mp4_vid = mp4_filename[3]
             video_dir = os.path.join(
                 self.mp4_dir, mp4_id, mp4_vname, mp4_vid + '.mp4')
             # print('============================\nvideo_dir : ' + video_dir, item)
