@@ -10,6 +10,7 @@
 
 import glob
 import os
+from pickle import FALSE
 import torch
 import platform
 from src.approaches.train_image_translation import Image_translation_block
@@ -66,8 +67,7 @@ parser.add_argument('--use_vox_dataset', type=str, default='raw')
 parser.add_argument('--add_audio_in', default=False, action='store_true')
 parser.add_argument('--comb_fan_awing', default=False, action='store_true')
 parser.add_argument('--fan_2or3D', type=str, default='3D')
-
-parser.add_argument('--single_test', type=str, default='False')
+parser.add_argument('--single_test', type=str, default='')
 
 opt_parser = parser.parse_args()
 

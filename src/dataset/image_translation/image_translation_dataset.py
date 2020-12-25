@@ -24,9 +24,9 @@ from scipy.io import wavfile as wav
 from scipy.signal import stft
 
 
-src_dir = r'/content/MakeItTalk/PreprocessedVox_imagetranslation/raw_fl3d'
-mp4_dir = r'/content/MakeItTalk/mp4'
-src_outer_dir = r'/content/MakeItTalk/PreprocessedVox_imagetranslation'
+src_dir = r'content/MakeItNow/PreprocessedVox_imagetranslation/raw_fl3d'
+mp4_dir = r'content/MakeItNow/mp4'
+src_outer_dir = r'content/MakeItNow/PreprocessedVox_imagetranslation'
 
 
 class image_translation_raw_dataset(data.Dataset):
@@ -427,7 +427,7 @@ class image_translation_raw98_dataset(data.Dataset):
 
     def __init__(self, num_frames=1):
 
-        self.src_dir = src_dir
+        self.src_dir = src_outer_dir
         self.mp4_dir = mp4_dir
 
         # self.fls_filenames = glob.glob1(self.src_dir, '*')
