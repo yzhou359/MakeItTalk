@@ -24,9 +24,12 @@ from scipy.io import wavfile as wav
 from scipy.signal import stft
 
 
-src_dir = r'content/MakeItNow/PreprocessedVox_imagetranslation/raw_fl3d'
-mp4_dir = r'content/MakeItNow/mp4'
-src_outer_dir = r'content/MakeItNow/PreprocessedVox_imagetranslation'
+src_dir = r'/content/MakeItTalk/PreprocessedVox_imagetranslation/raw_fl3d'
+mp4_dir = r'/content/MakeItTalk/mp4'
+src_outer_dir = r'/content/MakeItTalk/PreprocessedVox_imagetranslation'
+# src_dir = r'PreprocessedVox_imagetranslation/raw_fl3d'
+# mp4_dir = r'mp4'
+# src_outer_dir = r'PreprocessedVox_imagetranslation'
 
 
 class image_translation_raw_dataset(data.Dataset):
@@ -452,9 +455,9 @@ class image_translation_raw98_dataset(data.Dataset):
             # load mp4 file
             # ================= raw VOX version ================================
             mp4_filename = fls_filename[:-4].split('/')
-            mp4_id = mp4_filename[1]
-            mp4_vname = mp4_filename[2]
-            mp4_vid = mp4_filename[3]
+            mp4_id = mp4_filename[-3]  # 1
+            mp4_vname = mp4_filename[-2]  # 2
+            mp4_vid = mp4_filename[-1]  # 3
             video_dir = os.path.join(
                 self.mp4_dir, mp4_id, mp4_vname, mp4_vid + '.mp4')
             # print('============================\nvideo_dir : ' + video_dir, item)
@@ -631,10 +634,10 @@ class image_translation_raw98_test_dataset(data.Dataset):
 
         # load random face
         random_fls_filename = self.fls_filenames[max(item - 10, 0)]
-        mp4_filename = random_fls_filename[:-4].split('_x_')
-        mp4_id = mp4_filename[0].split('_')[-1]
-        mp4_vname = mp4_filename[1]
-        mp4_vid = mp4_filename[2]
+        mp4_filename = fls_filename[:-4].split('/')
+        mp4_id = mp4_filename[1]  # -3
+        mp4_vname = mp4_filename[2]  # -2
+        mp4_vid = mp4_filename[3]  # -1
         random_video_dir = os.path.join(
             self.mp4_dir, mp4_id, mp4_vname, mp4_vid + '.mp4')
         print('============================\nvideo_dir : ' + random_video_dir, item)
@@ -647,10 +650,10 @@ class image_translation_raw98_test_dataset(data.Dataset):
 
         # load mp4 file
         # ================= raw VOX version ================================
-        mp4_filename = fls_filename[:-4].split('_x_')
-        mp4_id = mp4_filename[0].split('_')[-1]
-        mp4_vname = mp4_filename[1]
-        mp4_vid = mp4_filename[2]
+        mp4_filename = fls_filename[:-4].split('/')
+        mp4_id = mp4_filename[1]  # -3
+        mp4_vname = mp4_filename[2]  # -2
+        mp4_vid = mp4_filename[3]  # -1
         video_dir = os.path.join(self.mp4_dir, mp4_id,
                                  mp4_vname, mp4_vid + '.mp4')
         # print('============================\nvideo_dir : ' + video_dir, item)

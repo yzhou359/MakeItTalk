@@ -39,9 +39,9 @@ log_dir = os.path.join(root, 'log')
 
 ''' Step 2. Train the network '''
 parser = argparse.ArgumentParser()
-parser.add_argument('--nepoch', type=int, default=150,
+parser.add_argument('--nepoch', type=int, default=20,
                     help='number of epochs to train for')
-parser.add_argument('--batch_size', type=int, default=8, help='batch size')
+parser.add_argument('--batch_size', type=int, default=2, help='batch size')
 parser.add_argument('--num_frames', type=int, default=1, help='')
 parser.add_argument('--num_workers', type=int, default=4,
                     help='number of frames extracted from each video')
@@ -56,11 +56,12 @@ parser.add_argument('--jpg_dir', type=str, default=jpg_dir)
 parser.add_argument('--ckpt_dir', type=str, default=ckpt_dir)
 parser.add_argument('--log_dir', type=str, default=log_dir)
 
-parser.add_argument('--jpg_freq', type=int, default=50, help='')
-parser.add_argument('--ckpt_last_freq', type=int, default=1000, help='')
-parser.add_argument('--ckpt_epoch_freq', type=int, default=1, help='')
+parser.add_argument('--jpg_freq', type=int, default=2, help='')
+parser.add_argument('--ckpt_last_freq', type=int, default=2, help='')
+parser.add_argument('--ckpt_epoch_freq', type=int, default=2, help='')
 
-parser.add_argument('--load_G_name', type=str, default='')
+parser.add_argument('--load_G_name', type=str,
+                    default='examples/ckpt/ckpt_116_i2i_comb.pth')
 parser.add_argument('--use_vox_dataset', type=str, default='raw')
 
 
