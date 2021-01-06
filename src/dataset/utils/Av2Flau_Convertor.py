@@ -13,6 +13,7 @@ import os
 import ffmpeg
 import cv2
 import face_alignment
+from numpy.core import shape_base
 from src.dataset.utils import icp
 
 
@@ -123,7 +124,7 @@ class Av2Flau_Convertor():
             '_x_', '/')
         probe = ffmpeg.probe(input_video_dir)
         # print(probe['streams'])
-        # print(len(probe['streams']))
+
         # if(len(probe['streams']) != 2):
         #     print('Error: not valid for # of a/v channel == 2.')
         #     return False, None

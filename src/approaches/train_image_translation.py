@@ -16,6 +16,7 @@ import time
 import numpy as np
 import cv2
 import os
+import matplotlib.pyplot as plt
 import glob
 from src.dataset.image_translation.image_translation_dataset import vis_landmark_on_img, vis_landmark_on_img98, vis_landmark_on_img74
 
@@ -42,19 +43,19 @@ class Image_translation_block():
             self.G = ResUnetGenerator(
                 input_nc=7, output_nc=3, num_downs=6, use_dropout=False)
         else:
-            # self.G = torch.load(opt_parser.load_G_name)
-            self.G = ResUnetGenerator(
-                input_nc=6, output_nc=3, num_downs=6, use_dropout=False)
+            self.G = torch.load(opt_parser.load_G_name)
+            #     self.G = ResUnetGenerator(
+            #         input_nc=6, output_nc=3, num_downs=6, use_dropout=False)
 
-        if (opt_parser.load_G_name != ''):
-            ckpt = torch.load(opt_parser.load_G_name)
-            try:
-                self.G.load_state_dict(ckpt['G'])
-            except:
-                tmp = nn.DataParallel(self.G)
-                tmp.load_state_dict(ckpt['G'])
-                self.G.load_state_dict(tmp.module.state_dict())
-                del tmp
+            # if (opt_parser.load_G_name != ''):
+            #     ckpt = torch.load(opt_parser.load_G_name)
+            #     try:
+            #         self.G.load_state_dict(ckpt['G'])
+            #     except:
+            #         tmp = nn.DataParallel(self.G)
+            #         tmp.load_state_dict(ckpt['G'])
+            #         self.G.load_state_dict(tmp.module.state_dict())
+            #         del tmp
 
         if torch.cuda.device_count() > 1:
             print("Let's use", torch.cuda.device_count(), "GPUs in G mode!")
@@ -204,7 +205,6 @@ class Image_translation_block():
             img_fls = np.stack(img_fls, axis=0).astype(np.float32) / 255.0
             image_fls_in = torch.tensor(
                 img_fls, requires_grad=False).to(device)
-
             if(self.opt_parser.add_audio_in):
                 # print(image_fls_in.shape, image_in.shape, audio_in.shape)
                 image_in = torch.cat([image_fls_in, image_in, audio_in], dim=1)
@@ -286,11 +286,13 @@ class Image_translation_block():
         except:
             pass
         if (self.opt_parser.write):
-            torch.save({
-                'G': self.G.state_dict(),
-                'opt': self.optimizer,
-                'epoch': epoch
-            }, os.path.join(self.opt_parser.ckpt_dir, self.opt_parser.name, 'ckpt_{}.pth'.format(save_type)))
+            torch.save(self.G, os.path.join(self.opt_parser.ckpt_dir,
+                                            self.opt_parser.name, 'ckpt_{}.pth'.format(save_type)))
+            # torch.save({
+            #     'G': self.G.state_dict(),
+            #     'opt': self.optimizer,
+            #     'epoch': epoch
+            # }, os.path.join(self.opt_parser.ckpt_dir, self.opt_parser.name, 'ckpt_{}.pth'.format(save_type)))
 
     def train(self):
         for epoch in range(self.opt_parser.nepoch):
