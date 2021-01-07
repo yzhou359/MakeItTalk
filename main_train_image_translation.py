@@ -53,7 +53,8 @@ parser.add_argument('--name', type=str, default='tmp')
 parser.add_argument('--test_speed', default=False, action='store_true')
 
 parser.add_argument('--jpg_dir', type=str, default=jpg_dir)
-parser.add_argument('--ckpt_dir', type=str, default=ckpt_dir)
+parser.add_argument('--ckpt_dir', type=str,
+                    default='/content/MakeItTalk/drive/MyDrive/MakeItTalk')
 parser.add_argument('--log_dir', type=str, default=log_dir)
 
 parser.add_argument('--jpg_freq', type=int, default=50, help='')
@@ -61,7 +62,7 @@ parser.add_argument('--ckpt_last_freq', type=int, default=500, help='')
 parser.add_argument('--ckpt_epoch_freq', type=int, default=1, help='')
 
 parser.add_argument('--load_G_name', type=str,
-                    default='examples/ckpt/ckpt_116_i2i_comb.pth')
+                    default='/content/MakeItTalk/drive/MyDrive/MakeItTalk/tmp/ckpt_last.pth')
 parser.add_argument('--use_vox_dataset', type=str, default='raw')
 
 

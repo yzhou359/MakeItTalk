@@ -8,16 +8,17 @@ import numpy as np
 from src.models.model_image_translation import ResUnetGenerator, ResidualBlock, ResidualBlock
 import torch_pruning as tp
 import matplotlib.pyplot as plt
-model = ResUnetGenerator(input_nc=6, output_nc=3,
-                         num_downs=6, use_dropout=False).to("cuda")
+# model = ResUnetGenerator(input_nc=6, output_nc=3,
+#                          num_downs=6, use_dropout=False).to("cuda")
 # params = sum([np.prod(p.size()) for p in model.parameters()])
 # print("Number of Parameters: %.1fM" % (params/1e6))
 
+
 # print(model)
-img = cv2.imread(
-    r'/home/hack/Downloads/Annotation (1)/Annotation/ROW_1278_11.jpg')
-plt.imshow(img)
-plt.show()
+# img = cv2.imread(
+#     r'/home/hack/Downloads/Annotation (1)/Annotation/ROW_1278_11.jpg')
+# plt.imshow(img)
+# plt.show()
 # summary(model, input_size=(6, 256, 256))
 
 # i = 0

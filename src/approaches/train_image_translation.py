@@ -43,7 +43,8 @@ class Image_translation_block():
             self.G = ResUnetGenerator(
                 input_nc=7, output_nc=3, num_downs=6, use_dropout=False)
         else:
-            self.G = torch.load(opt_parser.load_G_name)
+            self.ckpt = torch.load(opt_parser.load_G_name)
+            self.G = self.ckpt['G']
             #     self.G = ResUnetGenerator(
             #         input_nc=6, output_nc=3, num_downs=6, use_dropout=False)
 
@@ -151,6 +152,7 @@ class Image_translation_block():
                                                                   flip_input=True)
 
     def __train_pass__(self, epoch, is_training=True):
+        epoch += self.ckpt['epoch']
         st_epoch = time.time()
         if(is_training):
             self.G.train()
@@ -257,6 +259,7 @@ class Image_translation_block():
             # save ckpt
             if (i % self.opt_parser.ckpt_last_freq == 0):
                 self.__save_model__('last', epoch)
+                # os.system('!zip -r "/content/MakeItTalk/drive/MyDrive/MakeItTalk/last.zip" "PreprocessedVox_imagetranslation/ckpt/tmp/ckpt_last.pth"')
 
             print("Epoch {}, Batch {}/{}, loss {:.4f}, l1 {:.4f}, vggloss {:.4f}, styleloss {:.4f} time {:.4f}".format(
                 epoch, i, len(self.dataset) // self.opt_parser.batch_size,
@@ -286,8 +289,12 @@ class Image_translation_block():
         except:
             pass
         if (self.opt_parser.write):
-            torch.save(self.G, os.path.join(self.opt_parser.ckpt_dir,
-                                            self.opt_parser.name, 'ckpt_{}.pth'.format(save_type)))
+            # torch.save(self.G, os.path.join(self.opt_parser.ckpt_dir,
+            #                                 self.opt_parser.name, 'ckpt_{}.pth'.format(save_type)))
+            torch.save({
+                'G': self.G,
+                'epoch': epoch
+            }, os.path.join(self.opt_parser.ckpt_dir, self.opt_parser.name, 'ckpt_{}.pth'.format(save_type)))
             # torch.save({
             #     'G': self.G.state_dict(),
             #     'opt': self.optimizer,
