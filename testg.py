@@ -13,6 +13,13 @@ import matplotlib.pyplot as plt
 # params = sum([np.prod(p.size()) for p in model.parameters()])
 # print("Number of Parameters: %.1fM" % (params/1e6))
 
+# img = cv2.imread('examples_cartoon/wilk.png')
+# print(img.shape)
+
+bg = cv2.imread('examples_cartoon/wilk_bg.jpg')
+bg = cv2.resize(bg, (839, 919))
+cv2.imwrite('examples_cartoon/wilk_bg.jpg', bg)
+
 
 # print(model)
 # img = cv2.imread(
