@@ -8,6 +8,13 @@ import numpy as np
 from src.models.model_image_translation import ResUnetGenerator, ResidualBlock, ResidualBlock
 import torch_pruning as tp
 import matplotlib.pyplot as plt
+import os
+import pandas as pd
+
+
+file = pd.read_pickle('examples/dump/random_val_fl.pickle')
+print(file)
+
 # model = ResUnetGenerator(input_nc=6, output_nc=3,
 #                          num_downs=6, use_dropout=False).to("cuda")
 # params = sum([np.prod(p.size()) for p in model.parameters()])
@@ -16,9 +23,9 @@ import matplotlib.pyplot as plt
 # img = cv2.imread('examples_cartoon/wilk.png')
 # print(img.shape)
 
-bg = cv2.imread('examples_cartoon/wilk_bg.jpg')
-bg = cv2.resize(bg, (839, 919))
-cv2.imwrite('examples_cartoon/wilk_bg.jpg', bg)
+# bg = cv2.imread('examples_cartoon/wilk_bg.jpg')
+# bg = cv2.resize(bg, (839, 919))
+# cv2.imwrite('examples_cartoon/wilk_bg.jpg', bg)
 
 
 # print(model)

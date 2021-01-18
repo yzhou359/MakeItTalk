@@ -11,6 +11,7 @@ from src.autovc.retrain_version.vocoder_spec.utils import speaker_normalization
 from scipy.signal import get_window
 import glob
 
+
 def pySTFT(x, fft_length=1024, hop_length=256):
     x = np.pad(x, int(fft_length // 2), mode='reflect')
 
@@ -71,12 +72,14 @@ def extract_f0_func(gender):
             D_db = 20 * np.log10(np.maximum(min_level, D_mel)) - 16
             S = (D_db + 100) / 100
 
-            f0_rapt = sptk.rapt(wav.astype(np.float32) * 32768, fs, 256, min=lo, max=hi, otype=2)
+            f0_rapt = sptk.rapt(wav.astype(np.float32) *
+                                32768, fs, 256, min=lo, max=hi, otype=2)
             index_nonzero = (f0_rapt != -1e10)
             tmp = f0_rapt[index_nonzero]
             mean_f0, std_f0 = np.mean(tmp), np.std(tmp)
 
-            f0_norm = speaker_normalization(f0_rapt, index_nonzero, mean_f0, std_f0)
+            f0_norm = speaker_normalization(
+                f0_rapt, index_nonzero, mean_f0, std_f0)
 
             if len(S) != len(f0_norm):
                 pdb.set_trace()
@@ -117,7 +120,8 @@ def extract_f0_func_audiofile(audio_file, gender='M'):
     D_db = 20 * np.log10(np.maximum(min_level, D_mel)) - 16
     S = (D_db + 100) / 100
 
-    f0_rapt = sptk.rapt(wav.astype(np.float32) * 32768, fs, 256, min=lo, max=hi, otype=2)
+    f0_rapt = sptk.rapt(wav.astype(np.float32) * 32768,
+                        fs, 256, min=lo, max=hi, otype=2)
     index_nonzero = (f0_rapt != -1e10)
     tmp = f0_rapt[index_nonzero]
     mean_f0, std_f0 = np.mean(tmp), np.std(tmp)
@@ -125,7 +129,6 @@ def extract_f0_func_audiofile(audio_file, gender='M'):
     f0_norm = speaker_normalization(f0_rapt, index_nonzero, mean_f0, std_f0)
 
     return S, f0_norm
-
 
 
 if __name__ == '__main__':
