@@ -1,25 +1,26 @@
 """
  # Copyright 2020 Adobe
  # All Rights Reserved.
- 
+
  # NOTICE: Adobe permits you to use, modify, and distribute this file in
  # accordance with the terms of the Adobe license agreement accompanying
  # it.
- 
+
 """
 
-import os, glob, time, sys
+import os
+import glob
+import time
+import sys
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 from src.dataset.utils.Av2Flau_Convertor import Av2Flau_Convertor
 import platform
 
-if platform.release() == '4.4.0-83-generic':
-    src_dir = r'/mnt/ntfs/Dataset/TalkingToon/VoxCeleb2_imagetranslation/raw_fl3d'
-    mp4_dir = r'/mnt/ntfs/Dataset/VoxCeleb2/train_set/dev/mp4'
-else:
-    src_dir = r'/mnt/nfs/work1/kalo/yangzhou/VoxCeleb2/train_set/dev/mp4'
-    out_dir = r'/mnt/nfs/scratch1/yangzhou/VoxCeleb2_compressed_imagetranslation'
+src_dir = r'/content/MakeItTalk/mp4'
+out_dir = r'/content/MakeItTalk/PreprocessedVox_imagetranslation'
+
 
 def landmark_extraction(si, ei):
     '''
@@ -35,7 +36,6 @@ def landmark_extraction(si, ei):
         except:
             pass
 
-
     if(not os.path.isfile(os.path.join(out_dir, 'filename_index_new.txt'))):
         # generate all file list
 
@@ -50,7 +50,7 @@ def landmark_extraction(si, ei):
             clips.sort()
             for clip in clips:
                 videos = glob.glob1(os.path.join(src_dir, id, clip), '*.mp4')
-                clip_len_count[len(videos)] +=1
+                clip_len_count[len(videos)] += 1
                 # if(len(videos) > 10 and len(videos) < 30):
                 #     id_clip_list.append((id, clip))
                 id_clip_list.append((id, clip))
@@ -98,8 +98,10 @@ def landmark_extraction(si, ei):
 
             c = Av2Flau_Convertor(video_dir=os.path.join(src_dir, file),
                                   out_dir=out_dir, idx=idx)
-            c.convert() #  (save_audio=False, register=False, show=False)
-            print('Idx: {}, Processed time (min): {}'.format(idx, (time.time() - st) / 60.0))
+            c.convert()  # (save_audio=False, register=False, show=False)
+            print('Idx: {}, Processed time (min): {}'.format(
+                idx, (time.time() - st) / 60.0))
+
 
 def landmark_image_to_data(si, ei, show=False):
     '''
@@ -132,13 +134,15 @@ def landmark_image_to_data(si, ei, show=False):
             print('Unable to open video file')
             exit(0)
 
-        if(show==True):
+        if(show == True):
             length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
             fps = video.get(cv2.CAP_PROP_FPS)
             w = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-            print('Process Video {}, len: {}, FPS: {:.2f}, W X H: {} x {}'.format(video_dir, length, fps, w, h))
-            writer = cv2.VideoWriter('a.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), fps, (512, 256))
+            print('Process Video {}, len: {}, FPS: {:.2f}, W X H: {} x {}'.format(
+                video_dir, length, fps, w, h))
+            writer = cv2.VideoWriter('a.mp4', cv2.VideoWriter_fourcc(
+                'M', 'J', 'P', 'G'), fps, (512, 256))
 
             # skip first several frames due to landmark extraction
             start_idx = fls[0, 0].astype(int)
@@ -184,9 +188,9 @@ def landmark_image_to_data(si, ei, show=False):
                 ret, img_video = video.read()
 
                 frame = np.concatenate((img_fl, img_video), axis=2)
-                frame = cv2.resize(frame, (256, 256)) # 256 x 256  6
+                frame = cv2.resize(frame, (256, 256))  # 256 x 256  6
                 frames.append(frame)
-            frames = np.stack(frames, axis=0).astype(int) # N x 256 x 256 x 6
+            frames = np.stack(frames, axis=0).astype(int)  # N x 256 x 256 x 6
             pf[fls_filename] = frames
 
     # save to pickle file
@@ -201,7 +205,8 @@ def vis_landmark_on_img(img, shape, linewidth=2):
 
     def draw_curve(idx_list, color=(0, 255, 0), loop=False, lineWidth=linewidth):
         for i in idx_list:
-            cv2.line(img, (shape[i, 0], shape[i, 1]), (shape[i + 1, 0], shape[i + 1, 1]), color, lineWidth)
+            cv2.line(img, (shape[i, 0], shape[i, 1]),
+                     (shape[i + 1, 0], shape[i + 1, 1]), color, lineWidth)
         if (loop):
             cv2.line(img, (shape[idx_list[0], 0], shape[idx_list[0], 1]),
                      (shape[idx_list[-1] + 1, 0], shape[idx_list[-1] + 1, 1]), color, lineWidth)
@@ -225,7 +230,8 @@ def vis_landmark_on_img98(img, shape, linewidth=2):
 
     def draw_curve(idx_list, color=(0, 255, 0), loop=False, lineWidth=linewidth):
         for i in idx_list:
-            cv2.line(img, (shape[i, 0], shape[i, 1]), (shape[i + 1, 0], shape[i + 1, 1]), color, lineWidth)
+            cv2.line(img, (shape[i, 0], shape[i, 1]),
+                     (shape[i + 1, 0], shape[i + 1, 1]), color, lineWidth)
         if (loop):
             cv2.line(img, (shape[idx_list[0], 0], shape[idx_list[0], 1]),
                      (shape[idx_list[-1] + 1, 0], shape[idx_list[-1] + 1, 1]), color, lineWidth)
@@ -249,13 +255,15 @@ def vis_landmark_on_img74(img, shape, linewidth=2):
 
     def draw_curve(idx_list, color=(0, 255, 0), loop=False, lineWidth=linewidth):
         for i in idx_list:
-            cv2.line(img, (shape[i, 0], shape[i, 1]), (shape[i + 1, 0], shape[i + 1, 1]), color, lineWidth)
+            cv2.line(img, (shape[i, 0], shape[i, 1]),
+                     (shape[i + 1, 0], shape[i + 1, 1]), color, lineWidth)
         if (loop):
             cv2.line(img, (shape[idx_list[0], 0], shape[idx_list[0], 1]),
                      (shape[idx_list[-1] + 1, 0], shape[idx_list[-1] + 1, 1]), color, lineWidth)
 
     draw_curve(list(range(0, 16)), color=(255, 144, 25))  # jaw
-    draw_curve(list(range(17, 21)), color=(50, 205, 50), loop=False)  # eye brow
+    draw_curve(list(range(17, 21)), color=(
+        50, 205, 50), loop=False)  # eye brow
     draw_curve(list(range(22, 26)), color=(50, 205, 50), loop=False)
     draw_curve(list(range(27, 35)), color=(208, 224, 63))  # nose
     draw_curve(list(range(36, 43)), loop=True, color=(71, 99, 255))  # eyes

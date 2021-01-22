@@ -1,18 +1,19 @@
-import os
-import numpy as np
-import pickle
-import torch
-from math import ceil
-from src.autovc.retrain_version.model_vc_37_1 import Generator
-from pydub import AudioSegment
-import pynormalize.pynormalize
-from scipy.io import  wavfile as wav
 from scipy.signal import stft
+from scipy.io import wavfile as wav
+import pynormalize.pynormalize
+from pydub import AudioSegment
+from src.autovc.retrain_version.model_vc_37_1 import Generator
+from math import ceil
+import torch
+import pickle
+import numpy as np
+import os
 
 
 def match_target_amplitude(sound, target_dBFS):
     change_in_dBFS = target_dBFS - sound.dBFS
     return sound.apply_gain(change_in_dBFS)
+
 
 class AutoVC_mel_Convertor():
 
@@ -23,15 +24,18 @@ class AutoVC_mel_Convertor():
         else:
             with open(os.path.join(src_dir, 'filename_index.txt'), 'r') as f:
                 lines = f.readlines()
-                self.filenames = [(int(line.split(' ')[0]), line.split(' ')[1][:-1]) for line in lines]
+                self.filenames = [(int(line.split(' ')[0]), line.split(' ')[
+                                   1][:-1]) for line in lines]
 
         np.random.seed(seed)
         rand_perm = np.random.permutation(len(self.filenames))
-        proportion_idx = (int(proportion[0] * len(rand_perm)), int(proportion[1] * len(rand_perm)))
-        selected_index = rand_perm[proportion_idx[0] : proportion_idx[1]]
+        proportion_idx = (
+            int(proportion[0] * len(rand_perm)), int(proportion[1] * len(rand_perm)))
+        selected_index = rand_perm[proportion_idx[0]: proportion_idx[1]]
         self.selected_filenames = [self.filenames[i] for i in selected_index]
 
-        print('{} out of {} are in this portion'.format(len(self.selected_filenames), len(self.filenames)))
+        print('{} out of {} are in this portion'.format(
+            len(self.selected_filenames), len(self.filenames)))
 
     def __convert_single_only_au_AutoVC_format_to_dataset__(self, filename, build_train_dataset=True):
         """
@@ -51,12 +55,12 @@ class AutoVC_mel_Convertor():
             import shutil
             audio_file = os.path.join(self.src_dir, 'raw_wav', '{:05d}_{}_audio.wav'.
                                       format(global_clip_index, video_name[:-4]))
-            shutil.copy(os.path.join(self.src_dir, 'test_wav_files', video_name), audio_file)
+            shutil.copy(os.path.join(
+                self.src_dir, 'test_wav_files', video_name), audio_file)
 
         sound = AudioSegment.from_file(audio_file, "wav")
         normalized_sound = match_target_amplitude(sound, -20.0)
         normalized_sound.export(audio_file, format='wav')
-
 
         from src.autovc.retrain_version.vocoder_spec.extract_f0_func import extract_f0_func_audiofile
         S, f0_norm = extract_f0_func_audiofile(audio_file, 'M')
@@ -67,11 +71,9 @@ class AutoVC_mel_Convertor():
         from thirdparty.resemblyer_util.speaker_emb import get_spk_emb
         mean_emb, _ = get_spk_emb(audio_file)
 
-
         return S, mean_emb, f0_onehot
 
     def convert_wav_to_autovc_input(self, build_train_dataset=True, autovc_model_path=r'E:\Dataset\VCTK\stargan_vc\train_85_withpre1125000_local\360000-G.ckpt'):
-
 
         def pad_seq(x, base=32):
             len_out = int(base * ceil(float(x.shape[0]) / base))
@@ -86,13 +88,15 @@ class AutoVC_mel_Convertor():
         G.load_state_dict(g_checkpoint['model'])
 
         emb = np.loadtxt('autovc/retrain_version/obama_emb.txt')
-        emb_trg = torch.from_numpy(emb[np.newaxis, :].astype('float32')).to(device)
+        emb_trg = torch.from_numpy(
+            emb[np.newaxis, :].astype('float32')).to(device)
 
         aus = []
 
         for i, file in enumerate(self.selected_filenames):
             print(i, file)
-            x_real_src, emb, f0_org_src = self.__convert_single_only_au_AutoVC_format_to_dataset__(filename=file, build_train_dataset=build_train_dataset)
+            x_real_src, emb, f0_org_src = self.__convert_single_only_au_AutoVC_format_to_dataset__(
+                filename=file, build_train_dataset=build_train_dataset)
 
             '''# normal length #'''
             # with torch.no_grad():
@@ -110,15 +114,20 @@ class AutoVC_mel_Convertor():
 
                 x_real, len_pad = pad_seq(x_real.astype('float32'))
                 f0_org, _ = pad_seq(f0_org.astype('float32'))
-                x_real = torch.from_numpy(x_real[np.newaxis, :].astype('float32')).to(device)
-                emb_org = torch.from_numpy(emb[np.newaxis, :].astype('float32')).to(device)
+                x_real = torch.from_numpy(
+                    x_real[np.newaxis, :].astype('float32')).to(device)
+                emb_org = torch.from_numpy(
+                    emb[np.newaxis, :].astype('float32')).to(device)
                 # emb_trg = torch.from_numpy(emb[np.newaxis, :].astype('float32')).to(device)
-                f0_org = torch.from_numpy(f0_org[np.newaxis, :].astype('float32')).to(device)
+                f0_org = torch.from_numpy(
+                    f0_org[np.newaxis, :].astype('float32')).to(device)
 
-                print('source shape:', x_real.shape, emb_org.shape, emb_trg.shape, f0_org.shape)
+                print('source shape:', x_real.shape,
+                      emb_org.shape, emb_trg.shape, f0_org.shape)
 
                 with torch.no_grad():
-                    x_identic, x_identic_psnt_i, code_real = G(x_real, emb_org, f0_org, emb_trg, f0_org)
+                    x_identic, x_identic_psnt_i, code_real = G(
+                        x_real, emb_org, f0_org, emb_trg, f0_org)
                     x_identic_psnt.append(x_identic_psnt_i)
 
             x_identic_psnt = torch.cat(x_identic_psnt, dim=1)
@@ -171,7 +180,8 @@ class AutoVC_mel_Convertor():
         # Step 3 : STFT,
         # 1 frame = 1/25 * 16k = 640 samples => windowsize=320,  overlap=160
         # 1 frame = 1/29.97 * 16k = 533.86 samples => windowsize=356, overlap=178, (mis-align = 4.2sample / 1s)
-        f, t, Zxx = stft(samples, fs=sample_rate, nperseg=STFT_WINDOW_SIZE[str(FPS)])
+        f, t, Zxx = stft(samples, fs=sample_rate,
+                         nperseg=STFT_WINDOW_SIZE[str(FPS)])
 
         # stft_abs = np.abs(Zxx)
         stft_abs = np.log(np.abs(Zxx) ** 2 + 1e-10)
@@ -195,9 +205,7 @@ class AutoVC_mel_Convertor():
 
         return aus
 
-
     def convert_single_wav_to_autovc_input(self, audio_filename, autovc_model_path):
-
 
         def pad_seq(x, base=32):
             len_out = int(base * ceil(float(x.shape[0]) / base))
@@ -212,7 +220,8 @@ class AutoVC_mel_Convertor():
         G.load_state_dict(g_checkpoint['model'])
 
         emb = np.loadtxt('src/autovc/retrain_version/obama_emb.txt')
-        emb_trg = torch.from_numpy(emb[np.newaxis, :].astype('float32')).to(device)
+        emb_trg = torch.from_numpy(
+            emb[np.newaxis, :].astype('float32')).to(device)
 
         aus = []
         audio_file = audio_filename
@@ -235,7 +244,7 @@ class AutoVC_mel_Convertor():
         # emb_org = torch.from_numpy(emb[np.newaxis, :].astype('float32')).to(device)
         # f0_org = torch.from_numpy(f0_org[np.newaxis, :].astype('float32')).to(device)
         # print('source shape:', x_real.shape, emb_org.shape, emb_trg.shape, f0_org.shape)
-        #
+
         # with torch.no_grad():
         #     x_identic, x_identic_psnt, code_real = G(x_real, emb_org, f0_org, emb_trg, f0_org)
         # print('converted shape:', x_identic_psnt.shape, code_real.shape)
@@ -250,14 +259,19 @@ class AutoVC_mel_Convertor():
 
             x_real, len_pad = pad_seq(x_real.astype('float32'))
             f0_org, _ = pad_seq(f0_org.astype('float32'))
-            x_real = torch.from_numpy(x_real[np.newaxis, :].astype('float32')).to(device)
-            emb_org = torch.from_numpy(emb[np.newaxis, :].astype('float32')).to(device)
+            x_real = torch.from_numpy(
+                x_real[np.newaxis, :].astype('float32')).to(device)
+            emb_org = torch.from_numpy(
+                emb[np.newaxis, :].astype('float32')).to(device)
             # emb_trg = torch.from_numpy(emb[np.newaxis, :].astype('float32')).to(device)
-            f0_org = torch.from_numpy(f0_org[np.newaxis, :].astype('float32')).to(device)
-            print('source shape:', x_real.shape, emb_org.shape, emb_trg.shape, f0_org.shape)
+            f0_org = torch.from_numpy(
+                f0_org[np.newaxis, :].astype('float32')).to(device)
+            print('source shape:', x_real.shape,
+                  emb_org.shape, emb_trg.shape, f0_org.shape)
 
             with torch.no_grad():
-                x_identic, x_identic_psnt_i, code_real = G(x_real, emb_org, f0_org, emb_trg, f0_org)
+                x_identic, x_identic_psnt_i, code_real = G(
+                    x_real, emb_org, f0_org, emb_trg, f0_org)
                 x_identic_psnt.append(x_identic_psnt_i)
 
         x_identic_psnt = torch.cat(x_identic_psnt, dim=1)
@@ -273,10 +287,14 @@ class AutoVC_mel_Convertor():
         return aus
 
 
-
 if __name__ == '__main__':
-    c = AutoVC_mel_Convertor(r'E:\Dataset\TalkingToon\Obama_for_train', proportion=(0.0, 1.0))
+    c = AutoVC_mel_Convertor(
+        r'PreprocessedVox_imagetranslation', proportion=(0.0, 1.0))
     aus = c.convert_wav_to_autovc_input()
+    print(aus)
+    # c = AutoVC_mel_Convertor(
+    #     r'E:\Dataset\TalkingToon\Obama_for_train', proportion=(0.0, 1.0))
+    # aus = c.convert_wav_to_autovc_input()
 
-    with open(os.path.join(r'E:\Dataset\TalkingToon\Obama_for_train', 'dump', 'autovc_retrain_mel_au.pickle'), 'wb') as fp:
-        pickle.dump(aus, fp)
+    # with open(os.path.join(r'E:\Dataset\TalkingToon\Obama_for_train', 'dump', 'autovc_retrain_mel_au.pickle'), 'wb') as fp:
+    #     pickle.dump(aus, fp)
