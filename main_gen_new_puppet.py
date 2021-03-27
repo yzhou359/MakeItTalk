@@ -6,7 +6,7 @@ from facewarp.gen_puppet_utils import *
 ================================================ '''
 
 data_dir = out_dir = 'examples_cartoon'
-test_data = sys.argv[1] # for example 'foa_example.png'
+test_data = sys.argv[1] # for example 'roy_example.png'
 CH = test_data[:-4]
 use_gt_bb = False
 
