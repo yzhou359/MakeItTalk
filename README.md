@@ -31,10 +31,10 @@ Our method creates both non-photorealistic cartoon animations (top) and natural 
 
 ## Updates
 
+- [x] Generate new puppet! (tested on Ubuntu)
 - [x] Pre-trained models
 - [x] Google colab quick demo for natural faces [[detail]](quick_demo.ipynb) [[TDLR]](quick_demo_tdlr.ipynb)
 - [ ] Training code for each module
-- [ ] Customized puppet creating tool
 
 ## Requirements
 - Python environment 3.6
@@ -113,7 +113,36 @@ python main_end2end_cartoon.py --jpg <cartoon_puppet_name_with_extension> --jpg_
 - use addition args `--amp_lip_x <x> --amp_lip_y <y> --amp_pos <pos>` 
 to amply lip motion (in x/y-axis direction) and head motion displacements, default values are `<x>=2., <y>=2., <pos>=.5`
 
-- create your own puppets (ToDo...)
+### _Generate Your New Puppet_ 
+
+- put the cartoon image under `examples_cartoon`
+
+- install conda environment `foa_env_py2` (tested on python 2) for Face-of-art (https://github.com/papulke/face-of-art).
+ Download the pre-trained weight [here](https://www.dropbox.com/sh/hrxcyug1bmbj6cs/AAAxq_zI5eawcLjM8zvUwaXha?dl=0) and put it under `examples/ckpt`. 
+ Activate the environment.
+
+```
+source activate foa_env_py2
+```
+
+- create necessary files to animate your cartoon image, i.e. 
+`<your_puppet>_open_mouth.txt`, `<your_puppet>_close_mouth.txt`, `<your_puppet>_open_mouth_norm.txt`, `<your_puppet>_scale_shift.txt`, `<your_puppet>_delauney.txt`
+
+```
+python main_gen_new_puppet.py <your_puppet_with_file_extension>
+```
+
+- in details, it takes 3 steps
+    - Face-of-art automatic cartoon landmark detection.
+    - If it's wrong or not accurate, you can use our tool to drag and refine the landmarks.
+    - Estimate the closed mouth landmarks to serve as network input.
+    - Delauney triangulate the image with landmarks. 
+    
+- check puppet name `roy_example.png` for an example. 
+
+| ![img](doc/landmark_adjust.png) | ![img](doc/landmark_closemouth.png) | ![img](doc/landmark_delauney.png)
+| :---: | :---: | :---: |
+| Landmark Adjustment Tool |  Closed lips estimation | Delaunay Triangulation |
 
 ## Train
 
