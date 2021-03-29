@@ -26,6 +26,8 @@ DEMO_CH = 'wilk.png'
 parser = argparse.ArgumentParser()
 parser.add_argument('--jpg', type=str, required=True, help='Puppet image name to animate (with filename extension), e.g. wilk.png')
 parser.add_argument('--jpg_bg', type=str, required=True, help='Puppet image background (with filename extension), e.g. wilk_bg.jpg')
+parser.add_argument('--inner_lip', default=False, action='store_true', help='add this if the puppet is created with only inner lip landmarks')
+
 parser.add_argument('--out', type=str, default='out.mp4')
 
 parser.add_argument('--load_AUTOVC_name', type=str, default='examples/ckpt/ckpt_autovc.pth')
@@ -60,6 +62,7 @@ parser.add_argument('--segment_batch_size', type=int, default=512, help='batch s
 parser.add_argument('--emb_coef', default=3.0, type=float)
 parser.add_argument('--lambda_laplacian_smooth_loss', default=1.0, type=float)
 parser.add_argument('--use_11spk_only', default=False, action='store_true')
+
 
 opt_parser = parser.parse_args()
 
@@ -161,7 +164,8 @@ for i in range(0,len(fls_names)):
     fls[:, 48*3:] = savgol_filter(fls[:, 48*3:], 11, 3, axis=0)
     fls = fls.reshape((-1, 68, 3))
 
-    if (DEMO_CH in ['paint', 'mulaney', 'cartoonM', 'beer', 'color', 'JohnMulaney', 'vangogh', 'jm', 'roy', 'lineface']):
+    # if (DEMO_CH in ['paint', 'mulaney', 'cartoonM', 'beer', 'color', 'JohnMulaney', 'vangogh', 'jm', 'roy', 'lineface']):
+    if(not opt_parser.inner_lip):
         r = list(range(0, 68))
         fls = fls[:, r, :]
         fls = fls[:, :, 0:2].reshape(-1, 68 * 2)

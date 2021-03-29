@@ -3,5 +3,5 @@
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.6.2 (sftp://yangzhou@stargazer.cs.umass.edu:22/home/yangzhou/anaconda2/envs/makeittalk_env/bin/python) (2)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.6 (makeittalk_env)" project-jdk-type="Python SDK" />
 </project>
